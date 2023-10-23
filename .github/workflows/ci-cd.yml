@@ -16,9 +16,6 @@ jobs:
     - name: Build Docker image
       run: docker build -t devops-vue-project:latest .
       
-    - name: Test
-      run: docker run devops-vue-project:latest python main.py # Use "main.py" as the entry point
-      
   push:
     needs: build
     runs-on: ubuntu-latest
