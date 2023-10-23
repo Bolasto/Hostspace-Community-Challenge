@@ -13,11 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Build Docker image
+    - name: Push and Build Docker image
       env:
         IMAGE_NAME: devops-vue-project
         PIPELINE_NUMBER: ${{ github.run_number }}
-      run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.PIPELINE_NUMBER }} -t ${{ env.IMAGE_NAME }}:latest .
+      run: |
+        docker build -t ${{ env.IMAGE_NAME }}:${{ env.PIPELINE_NUMBER }} -t ${{ env.IMAGE_NAME }}:latest .
+        docker push ${{ env.IMAGE_NAME }}:${{ env.PIPELINE_NUMBER }}
+        docker push ${{ env.IMAGE_NAME }}:latest
 
   push:
     needs: build
@@ -29,18 +32,3 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-      
-    - name: Push Docker image
-      env:
-        IMAGE_NAME: devops-vue-project
-        PIPELINE_NUMBER: ${{ github.run_number }}
-      run: |
-        docker push ${{ env.IMAGE_NAME }}:${{ env.PIPELINE_NUMBER }}
-        docker push ${{ env.IMAGE_NAME }}:latest
-
-    - name: Push Docker image to Docker Hub
-      run: |
-        docker tag devops-vue-project bolasto/devops-vue-project
-        docker push bolasto/devops-vue-project
-      env:
-        DOCKER_CLI_ACI: 1
