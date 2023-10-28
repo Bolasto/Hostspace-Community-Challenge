@@ -18,7 +18,7 @@ jobs:
         uses: MaximilianoBz/dockerhub-buildpush@v1.0
         with:
           registry_url: 'docker.io'
-          repository_name: 'Hostspace-Community-Challenge'
+          repository_name: 'devops-vue-project'
           user_name: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           image_version: 'latest'
