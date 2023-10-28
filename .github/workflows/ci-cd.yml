@@ -20,9 +20,8 @@ on:
           login: "${{ secrets.DOCKER_USERNAME }}"
           password: "${{ secrets.DOCKER_PASSWORD }}"
           platforms: linux/amd64,linux/arm64
-          image_name: devops-vue-project
-		  
-
+          image_name: devops-vue-project  
+	  
     outputs:
       image: ${{ steps.build.outputs.image }}
       tag: ${{ steps.build.outputs.tag }}
