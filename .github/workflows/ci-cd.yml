@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Docker Build And Push To Docker Hub
 
 on:
   push:
@@ -7,34 +7,21 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build Docker image
-      env:
-        IMAGE_NAME: devops-vue-project
-        PIPELINE_NUMBER: ${{ github.run_number }}
-      run: |
-        docker build -t ${{ env.IMAGE_NAME }}:${{ env.PIPELINE_NUMBER }} -t ${{ env.IMAGE_NAME }}:latest
-        docker images
-	     
-  push:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-      
-    - name: Push Docker image to Docker Hub
-      run: |
-        docker tag devops-vue-project:latest bolasto/devops-vue-project:latest
-        docker push bolasto/devops-vue-project:latest
-      env:
-        DOCKER_CLI_ACI: 1
+      - name: Build Docker Image
+        id: buildAndPushImage
+        uses: MaximilianoBz/dockerhub-buildpush@v1.0
+        with:
+          registry_url: 'docker.io'
+          repository_name: 'Hostspace-Community-Challenge'
+          user_name: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          image_version: 'latest'
+          docker_file: '.'
+      - name: Get pre step result output image_pull_url
+        run: echo "The time was ${{ steps.buildAndPushImage.outputs.image_pull_url }}"
