@@ -1,27 +1,28 @@
-name: Docker Build And Push To Docker Hub
+name: Push into main branch
+  on:
+    push:
+      branches: [ main ]
 
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
+  jobs:
+    context:
+      runs-on: ubuntu-latest
+      steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Docker Image
-        id: buildAndPushImage
-        uses: MaximilianoBz/dockerhub-buildpush@v1.0
+      - name: Build
+        id: build
+        uses: cloudposse/github-action-docker-build-push@main
         with:
-          registry_url: 'docker.io'
-          repository_name: 'devops-vue-project'
-          user_name: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          image_version: 'latest'
-          docker_file: '.'
-      - name: Get pre step result output image_pull_url
-        run: echo "The time was ${{ steps.buildAndPushImage.outputs.image_pull_url }}"
+          registry: registry.hub.docker.com
+          organization: "${{ github.event.repository.owner.login }}"
+          repository: "${{ github.event.repository.name }}"
+          login: "${{ secrets.DOCKER_USERNAME }}"
+          password: "${{ secrets.DOCKER_PASSWORD }}"
+          platforms: linux/amd64,linux/arm64
+		  image_name: devops-vue-project
+		  
+
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      tag: ${{ steps.build.outputs.tag }}
